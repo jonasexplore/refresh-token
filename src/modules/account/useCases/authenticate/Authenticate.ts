@@ -1,7 +1,6 @@
 import { prisma } from "../../../../database";
 import { compare } from "bcrypt";
-import { sign } from "jsonwebtoken";
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../../../../config/default";
+import { generateRefreshToken, generateToken } from "../../providers/tokens";
 
 type AuthenticateDTO = {
   username: string;
@@ -22,15 +21,8 @@ class Authenticate {
       throw new Error("Invalid username or password.");
     }
 
-    const token = sign({ username }, JWT_SECRET, {
-      subject: account.id,
-      expiresIn: "12000ms",
-    });
-
-    const refreshToken = sign({ username }, JWT_REFRESH_SECRET, {
-      subject: account.id,
-      expiresIn: "7d",
-    });
+    const token = generateToken(account.id);
+    const refreshToken = await generateRefreshToken(account.id);
 
     return { token, refreshToken };
   }
