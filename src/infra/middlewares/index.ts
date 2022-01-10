@@ -1,0 +1,1 @@
+export { isAuthenticate } from "./isAuthenticate";
